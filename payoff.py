@@ -56,8 +56,9 @@ def main_app():
                 
                 # Create a figure to display the plot
                 fig, ax = plt.subplots()
-                op.multi_plotter(spot=spot, spot_range=spot_range, op_list=st.session_state.legs, ax=ax)
-                st.pyplot(fig)  # Display the plot in Streamlit
+                op.multi_plotter(spot=spot, spot_range=spot_range, op_list=st.session_state.legs)
+                plt.savefig('payoff_plot.png', bbox_inches='tight')
+                st.image('payoff_plot.png')  # Display the plot in Streamlit
                 
                 # Show Edit Button after plotting
                 if st.button("Edit Strategy"):
