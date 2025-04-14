@@ -35,7 +35,7 @@ def main_app():
         for i in range(st.session_state.num_legs):
             if len(st.session_state.legs) < st.session_state.num_legs:
                 # Initialize leg details in session state
-                st.session_state.legs.append({"op_type": "c", "strike": 100, "tr_type": "b", "op_pr": 5})
+                st.session_state.legs.append({"op_type": "c", "strike": 100, "tr_type": "b", "op_pr": 5, "quantity": 10})
             
             # Display input fields for each leg dynamically
             with st.expander(f"Leg {i+1}"):
@@ -43,9 +43,10 @@ def main_app():
                 strike = st.number_input(f"Strike Price (Leg {i+1})", value=st.session_state.legs[i]["strike"], step=1, key=f"strike_{i}")
                 tr_type = st.selectbox(f"Transaction Type (Leg {i+1})", options=["Buy", "Sell"], key=f"tr_type_{i}")
                 op_pr = st.number_input(f"Option Premium (Leg {i+1})", value=st.session_state.legs[i]["op_pr"], step=1, key=f"op_pr_{i}")
+                quantity = st.number_input(f"Quantity (Leg {i+1})", value=st.session_state.legs[i]["quantity"], step=1, key=f"quantity_{i}")
 
                 # Update session state with new values
-                st.session_state.legs[i] = {"op_type": op_type.lower()[0], "strike": strike, "tr_type": tr_type.lower()[0], "op_pr": op_pr}
+                st.session_state.legs[i] = {"op_type": op_type.lower()[0], "strike": strike, "tr_type": tr_type.lower()[0], "op_pr": op_pr, "quantity": quantity}
 
         # Save and Plot Button
         if st.button("Save & Plot Strategy"):
