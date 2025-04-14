@@ -1,5 +1,6 @@
 import streamlit as st
 import opstrat as op
+import matplotlib.pyplot as plt
 
 # Initialize session state variables
 if 'strategy_added' not in st.session_state:
@@ -52,8 +53,12 @@ def main_app():
                 # Generate the payoff plot using Opstrat
                 spot = 100  # Example spot price; this can be made dynamic as well.
                 spot_range = 20  # Example spot range; this can also be dynamic.
-                op.multi_plotter(spot=spot, spot_range=spot_range, op_list=st.session_state.legs)
-
+                
+                # Create a figure to display the plot
+                fig, ax = plt.subplots()
+                op.multi_plotter(spot=spot, spot_range=spot_range, op_list=st.session_state.legs, ax=ax)
+                st.pyplot(fig)  # Display the plot in Streamlit
+                
                 # Show Edit Button after plotting
                 if st.button("Edit Strategy"):
                     reset_strategy()
