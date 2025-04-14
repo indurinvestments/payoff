@@ -9,15 +9,12 @@ if 'num_legs' not in st.session_state:
     st.session_state.num_legs = 0
 if 'legs' not in st.session_state:
     st.session_state.legs = []
-if 'op_type' not in st.session_state:
-    st.session_state.op_type = "Call"  # Default value
 
 # Function to reset legs and strategy state
 def reset_strategy():
     st.session_state.strategy_added = False
     st.session_state.num_legs = 0
     st.session_state.legs = []
-    st.session_state.op_type = "Call"
 
 # Main App Logic
 def main_app():
@@ -32,14 +29,6 @@ def main_app():
         if st.button("Confirm Number of Legs"):
             st.session_state.num_legs = num_legs
 
-    # Option Type Dropdown
-    if st.session_state.num_legs > 0:
-        st.write("Configure Strategy")
-        op_type = st.selectbox("Option Type", options=["Call", "Put"], key="op_type")
-        # Update session state with selected option type
-        if op_type != st.session_state.op_type:
-            st.session_state.op_type = op_type
-
     # Input Fields for Each Leg
     if st.session_state.num_legs > 0:
         st.write("Configure Each Leg")
@@ -50,14 +39,15 @@ def main_app():
             
             # Display input fields for each leg dynamically in a row
             with st.expander(f"Leg {i+1}"):
-                col1, col2, col3, col4 = st.columns(4)
-                strike = col1.number_input(f"Strike Price", value=st.session_state.legs[i].get("strike", 100), step=1, key=f"strike_{i}")
-                tr_type = col2.selectbox(f"Transaction Type", options=["Buy", "Sell"], key=f"tr_type_{i}")
-                op_pr = col3.number_input(f"Option Premium", value=st.session_state.legs[i].get("op_pr", 5), step=1, key=f"op_pr_{i}")
-                quantity = col4.number_input(f"Quantity", value=st.session_state.legs[i].get("quantity", 10), step=1, key=f"quantity_{i}")
+                col1, col2, col3, col4, col5 = st.columns(5)
+                op_type = col1.selectbox(f"Option Type", options=["Call", "Put"], key=f"op_type_{i}")
+                strike = col2.number_input(f"Strike Price", value=st.session_state.legs[i].get("strike", 100), step=1, key=f"strike_{i}")
+                tr_type = col3.selectbox(f"Transaction Type", options=["Buy", "Sell"], key=f"tr_type_{i}")
+                op_pr = col4.number_input(f"Option Premium", value=st.session_state.legs[i].get("op_pr", 5), step=1, key=f"op_pr_{i}")
+                quantity = col5.number_input(f"Quantity", value=st.session_state.legs[i].get("quantity", 10), step=1, key=f"quantity_{i}")
 
                 # Update session state with new values
-                st.session_state.legs[i] = {"op_type": st.session_state.op_type.lower()[0], "strike": strike, "tr_type": tr_type.lower()[0], "op_pr": op_pr, "quantity": quantity}
+                st.session_state.legs[i] = {"op_type": op_type.lower()[0], "strike": strike, "tr_type": tr_type.lower()[0], "op_pr": op_pr, "quantity": quantity}
 
         # Save and Plot Button
         if st.button("Save & Plot Strategy"):
