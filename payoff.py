@@ -58,7 +58,18 @@ def main_app():
                 
                 # Create a figure to display the plot
                 fig, ax = plt.subplots()
-                op.multi_plotter(spot=spot, spot_range=spot_range, op_list=st.session_state.legs)
+                # Manually calculate payoff to ensure quantities are applied correctly
+                stock_prices = np.linspace(spot * (1 - spot_range / 100), spot * (1 + spot_range / 100), 1000)
+                payoff = np.zeros_like(stock_prices)
+                
+                for leg in st.session_state.legs:
+                    if leg["op_type"] == "c":
+                        payoff += leg["quantity"] * (np.maximum(stock_prices - leg["strike"], 0) - leg["op_pr"])
+                    elif leg["op_type"] == "p":
+                        payoff += leg["quantity"] * (leg["op_pr"] - np.maximum(stock_prices - leg["strike"], 0))
+                
+                ax.plot(stock_prices, payoff)
+                ax.axhline(y=0, color='gray', linestyle='--')
                 plt.savefig('payoff_plot.png', bbox_inches='tight')
                 st.image('payoff_plot.png')  # Display the plot in Streamlit
                 
