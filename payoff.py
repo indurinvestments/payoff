@@ -49,7 +49,7 @@ def main_app():
                 # Edit Button
                 if st.button("Edit Strategy"):
                     st.session_state.editing = True
-                    st.experimental_rerun()
+                    st.rerun()
 
 # Run the main app
 main_app()
