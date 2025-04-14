@@ -1,41 +1,55 @@
 import streamlit as st
 import opstrat as op
 
-# Streamlit App Title
-st.title("Multi-Leg Option Strategy Visualizer")
+# Initialize session state variables
+if 'strategy_added' not in st.session_state:
+    st.session_state.strategy_added = False
+if 'editing' not in st.session_state:
+    st.session_state.editing = False
 
-# Sidebar for Inputs
-st.sidebar.header("Configure Your Option Strategy")
+# Main App Logic
+def main_app():
+    # Add Strategy Button
+    if st.button("Add Strategy"):
+        st.session_state.strategy_added = True
+        st.experimental_rerun()
 
-# Spot Price Input
-spot = st.sidebar.number_input("Current Market Price (Spot)", value=100, step=1)
+    if st.session_state.strategy_added:
+        # Number of Legs Input
+        col1, col2 = st.columns([3, 1])
+        num_legs = col1.number_input("Number of Legs", min_value=1, max_value=10, value=2, step=1)
+        if col2.button("Add"):
+            # Initialize list for legs
+            if 'legs' not in st.session_state:
+                st.session_state.legs = []
+            
+            # Clear previous legs if editing
+            if st.session_state.editing:
+                st.session_state.legs = []
+                st.session_state.editing = False
+            
+            # Generate input fields for each leg
+            st.session_state.legs = []
+            for i in range(num_legs):
+                with st.expander(f"Leg {i+1}"):
+                    op_type = st.selectbox(f"Option Type (Leg {i+1})", options=["Call", "Put"])
+                    strike = st.number_input(f"Strike Price (Leg {i+1})", value=100 + i * 10, step=1)
+                    tr_type = st.selectbox(f"Transaction Type (Leg {i+1})", options=["Buy", "Sell"])
+                    op_pr = st.number_input(f"Option Premium (Leg {i+1})", value=5 + i * 2, step=1)
+                    
+                    # Append leg details to the list
+                    st.session_state.legs.append({"op_type": op_type.lower()[0], "strike": strike, "tr_type": tr_type.lower()[0], "op_pr": op_pr})
+            
+            # Save and Plot Button
+            if st.button("Save & Plot Strategy"):
+                # Generate the payoff plot using Opstrat
+                st.subheader("Payoff Diagram")
+                op.multi_plotter(spot=100, spot_range=20, op_list=st.session_state.legs)
+                
+                # Edit Button
+                if st.button("Edit Strategy"):
+                    st.session_state.editing = True
+                    st.experimental_rerun()
 
-# Spot Range Input
-spot_range = st.sidebar.number_input("Spot Range (%)", value=20, step=1)
-
-# Dynamic Leg Configuration
-st.sidebar.subheader("Option Legs")
-legs = st.sidebar.number_input("Number of Legs", min_value=1, max_value=10, value=2, step=1)
-
-# Initialize an empty list for option legs
-option_legs = []
-
-# Collect leg details dynamically based on the number of legs
-for i in range(legs):
-    st.sidebar.subheader(f"Leg {i+1}")
-    op_type = st.sidebar.selectbox(f"Option Type (Leg {i+1})", options=["Call", "Put"], key=f"op_type_{i}")
-    strike = st.sidebar.number_input(f"Strike Price (Leg {i+1})", value=100 + i * 10, step=1, key=f"strike_{i}")
-    tr_type = st.sidebar.selectbox(f"Transaction Type (Leg {i+1})", options=["Buy", "Sell"], key=f"tr_type_{i}")
-    op_pr = st.sidebar.number_input(f"Option Premium (Leg {i+1})", value=5 + i * 2, step=1, key=f"op_pr_{i}")
-
-    # Append leg details to the list
-    option_legs.append({"op_type": op_type.lower()[0], "strike": strike, "tr_type": tr_type.lower()[0], "op_pr": op_pr})
-
-# Button to Save and Plot
-if st.button("Save & Plot Strategy"):
-    # Generate the payoff plot using Opstrat
-    st.subheader("Payoff Diagram")
-    op.multi_plotter(spot=spot, spot_range=spot_range, op_list=option_legs)
-
-# Footer
-st.write("Use the sidebar to configure your strategy. Click 'Save & Plot Strategy' to visualize the payoff.")
+# Run the main app
+main_app()
