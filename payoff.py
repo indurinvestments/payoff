@@ -1,4 +1,5 @@
 import streamlit as st
+import numpy as np  # Ensure numpy is imported
 import opstrat as op
 import matplotlib.pyplot as plt
 
@@ -58,7 +59,6 @@ def main_app():
                 
                 # Create a figure to display the plot
                 fig, ax = plt.subplots()
-                # Manually calculate payoff to ensure quantities are applied correctly
                 stock_prices = np.linspace(spot * (1 - spot_range / 100), spot * (1 + spot_range / 100), 1000)
                 payoff = np.zeros_like(stock_prices)
                 
