@@ -34,16 +34,16 @@ def main_app():
         st.write("Configure Each Leg")
         for i in range(st.session_state.num_legs):
             if len(st.session_state.legs) < st.session_state.num_legs:
-                # Initialize leg details in session state
+                # Initialize leg details in session state with quantity
                 st.session_state.legs.append({"op_type": "c", "strike": 100, "tr_type": "b", "op_pr": 5, "quantity": 10})
             
             # Display input fields for each leg dynamically
             with st.expander(f"Leg {i+1}"):
                 op_type = st.selectbox(f"Option Type (Leg {i+1})", options=["Call", "Put"], key=f"op_type_{i}")
-                strike = st.number_input(f"Strike Price (Leg {i+1})", value=st.session_state.legs[i]["strike"], step=1, key=f"strike_{i}")
+                strike = st.number_input(f"Strike Price (Leg {i+1})", value=st.session_state.legs[i].get("strike", 100), step=1, key=f"strike_{i}")
                 tr_type = st.selectbox(f"Transaction Type (Leg {i+1})", options=["Buy", "Sell"], key=f"tr_type_{i}")
-                op_pr = st.number_input(f"Option Premium (Leg {i+1})", value=st.session_state.legs[i]["op_pr"], step=1, key=f"op_pr_{i}")
-                quantity = st.number_input(f"Quantity (Leg {i+1})", value=st.session_state.legs[i]["quantity"], step=1, key=f"quantity_{i}")
+                op_pr = st.number_input(f"Option Premium (Leg {i+1})", value=st.session_state.legs[i].get("op_pr", 5), step=1, key=f"op_pr_{i}")
+                quantity = st.number_input(f"Quantity (Leg {i+1})", value=st.session_state.legs[i].get("quantity", 10), step=1, key=f"quantity_{i}")
 
                 # Update session state with new values
                 st.session_state.legs[i] = {"op_type": op_type.lower()[0], "strike": strike, "tr_type": tr_type.lower()[0], "op_pr": op_pr, "quantity": quantity}
